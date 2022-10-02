@@ -1,0 +1,9 @@
+cargo run
+cargo build --release
+cargo clean
+cargo test
+cargo fmt
+
+-------
+mandelbrot.exe mandel.png 64000x48000 -1.20,0.35 -1.0,0.20
+mandelbrot.exe mandel.png 64000x48000 1.0,1.0 -1.0,-1.0
