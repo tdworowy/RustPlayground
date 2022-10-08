@@ -3,30 +3,31 @@ use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
 
-static MAX: u16 = 2500; //65535;
-static MAX_U6: u16 = 65535;
-static RED_JUMP: u16 = 500;
-static GREEN_JUMP: u16 = 800;
-static BLUE_JUMP: u16 = 300;
+// TODO more testing (curent values untested)
+static MAX: u16 = 3500; //65535;
+static MAX_U16: u16 = 65535;
+static RED_JUMP: u16 = 100; 
+static GREEN_JUMP: u16 = 50;
+static BLUE_JUMP: u16 = 70;
 
 fn rgb_granient(i: u16) -> (u16, u16, u16) {
-    let (r, g, b);
-    if i + RED_JUMP == MAX {
-        r = MAX;
-    } else {
-        r = i + RED_JUMP;
-    }
-    if i + GREEN_JUMP == MAX {
-        g = MAX;
-    } else {
-        g = i + GREEN_JUMP;
-    }
-    if i + BLUE_JUMP == MAX {
-        b = MAX;
-    } else {
-        b = i + BLUE_JUMP;
-    }
-    return (r, g, b);
+    //let (r, g, b);
+    // if i + RED_JUMP == MAX {
+    //     r = MAX;
+    // } else {
+    //     r = i + RED_JUMP;
+    // }
+    // if i + GREEN_JUMP == MAX {
+    //     g = MAX;
+    // } else {
+    //     g = i + GREEN_JUMP;
+    // }
+    // if i + BLUE_JUMP == MAX {
+    //     b = MAX;
+    // } else {
+    //     b = i + BLUE_JUMP;
+    // }
+    return (i * RED_JUMP, i * GREEN_JUMP, i * BLUE_JUMP);
 }
 
 fn escape_time(c: Complex<f64>, limit: u16) -> Option<(u16, u16, u16)> {
@@ -124,9 +125,9 @@ fn render(
             pixels[row * bounds.0 + column] = match escape_time(point, MAX) {
                 None => (0, 0, 0),
                 Some(count) => (
-                    MAX_U6 - count.0 as u16,
-                    MAX_U6 - count.1 as u16,
-                    MAX_U6 - count.2 as u16,
+                    MAX_U16 - count.0,
+                    MAX_U16 - count.1,
+                    MAX_U16 - count.2,
                 ),
             }
         }
