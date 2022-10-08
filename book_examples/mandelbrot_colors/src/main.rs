@@ -3,20 +3,22 @@ use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
 
+static max:usize = 255;
+
 fn rgb_granient(i: usize) -> (usize, usize, usize) {
     let (r, g, b);
-    if i + 50 == 255 {
-        r = 255;
+    if i + 50 == max {
+        r = max;
     } else {
         r = i + 70;
     }
-    if i + 80 == 255 {
-        g = 255;
+    if i + 80 == max {
+        g = max;
     } else {
         g = i + 80;
     }
-    if i + 30 == 255 {
-        b = 255;
+    if i + 30 == max {
+        b = max;
     } else {
         b = i + 30;
     }
@@ -115,7 +117,7 @@ fn render(
     for row in 0..bounds.1 {
         for column in 0..bounds.0 {
             let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
-            pixels[row * bounds.0 + column] = match escape_time(point, 255) {
+            pixels[row * bounds.0 + column] = match escape_time(point, max) {
                 None => (0, 0, 0),
                 Some(count) => (
                     255 - count.0 as u8,
