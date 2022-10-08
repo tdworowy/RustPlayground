@@ -3,10 +3,11 @@ use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
 
-static MAX: u16 = 65535;
-static  RED_JUMP:u16 = 50;
-static  GREEN_JUMP:u16 = 80;
-static  BLUE_JUMP:u16 = 30;
+static MAX: u16 = 2500; //65535;
+static MAX_U6: u16 = 65535;
+static RED_JUMP: u16 = 500;
+static GREEN_JUMP: u16 = 800;
+static BLUE_JUMP: u16 = 300;
 
 fn rgb_granient(i: u16) -> (u16, u16, u16) {
     let (r, g, b);
@@ -123,9 +124,9 @@ fn render(
             pixels[row * bounds.0 + column] = match escape_time(point, MAX) {
                 None => (0, 0, 0),
                 Some(count) => (
-                    255 - count.0 as u16,
-                    255 - count.1 as u16,
-                    255 - count.2 as u16,
+                    MAX_U6 - count.0 as u16,
+                    MAX_U6 - count.1 as u16,
+                    MAX_U6 - count.2 as u16,
                 ),
             }
         }
