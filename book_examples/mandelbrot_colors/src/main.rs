@@ -3,29 +3,32 @@ use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
 
-static max:usize = 255;
+static MAX: u16 = 65535;
+static  RED_JUMP:u16 = 50;
+static  GREEN_JUMP:u16 = 80;
+static  BLUE_JUMP:u16 = 30;
 
-fn rgb_granient(i: usize) -> (usize, usize, usize) {
+fn rgb_granient(i: u16) -> (u16, u16, u16) {
     let (r, g, b);
-    if i + 50 == max {
-        r = max;
+    if i + RED_JUMP == MAX {
+        r = MAX;
     } else {
-        r = i + 70;
+        r = i + RED_JUMP;
     }
-    if i + 80 == max {
-        g = max;
+    if i + GREEN_JUMP == MAX {
+        g = MAX;
     } else {
-        g = i + 80;
+        g = i + GREEN_JUMP;
     }
-    if i + 30 == max {
-        b = max;
+    if i + BLUE_JUMP == MAX {
+        b = MAX;
     } else {
-        b = i + 30;
+        b = i + BLUE_JUMP;
     }
     return (r, g, b);
 }
 
-fn escape_time(c: Complex<f64>, limit: usize) -> Option<(usize, usize, usize)> {
+fn escape_time(c: Complex<f64>, limit: u16) -> Option<(u16, u16, u16)> {
     let mut z = Complex { re: 0.0, im: 0.0 };
     for i in 0..limit {
         if z.norm_sqr() > 4.0 {
@@ -108,7 +111,7 @@ fn test_pixel_to_point() {
 }
 
 fn render(
-    pixels: &mut [(u8, u8, u8)],
+    pixels: &mut [(u16, u16, u16)],
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
@@ -117,12 +120,12 @@ fn render(
     for row in 0..bounds.1 {
         for column in 0..bounds.0 {
             let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
-            pixels[row * bounds.0 + column] = match escape_time(point, max) {
+            pixels[row * bounds.0 + column] = match escape_time(point, MAX) {
                 None => (0, 0, 0),
                 Some(count) => (
-                    255 - count.0 as u8,
-                    255 - count.1 as u8,
-                    255 - count.2 as u8,
+                    255 - count.0 as u16,
+                    255 - count.1 as u16,
+                    255 - count.2 as u16,
                 ),
             }
         }
@@ -161,7 +164,7 @@ impl From<std::io::Error> for WriteImageError {
 
 fn write_image(
     file_name: &str,
-    pixels: &[(u8, u8, u8)],
+    pixels: &[(u16, u16, u16)],
     bounds: (usize, usize),
 ) -> Result<(), WriteImageError> {
     let mut imgbuf = image::ImageBuffer::new(bounds.0 as u32, bounds.1 as u32);
@@ -215,7 +218,8 @@ fn multi_thread() {
     let threads = 16;
     let rows_per_band = bounds.1 / threads + 1;
     {
-        let bands: Vec<&mut [(u8, u8, u8)]> = pixels.chunks_mut(rows_per_band * bounds.0).collect();
+        let bands: Vec<&mut [(u16, u16, u16)]> =
+            pixels.chunks_mut(rows_per_band * bounds.0).collect();
         crossbeam::scope(|spawner| {
             for (i, band) in bands.into_iter().enumerate() {
                 let top = rows_per_band * i;
