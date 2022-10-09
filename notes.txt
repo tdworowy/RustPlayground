@@ -9,10 +9,16 @@ mandelbrot.exe mandel.png 64000x48000 -1.20,0.35 -1.0,0.20
 mandelbrot.exe mandel.png 64000x48000 1.0,1.0 -1.0,-1.0
 
 
-mandelbrot_colors.exe mandel.png 64000x48000 -0.75,0.20 -0.85,0.10
+mandelbrot_colors.exe mandel.png 64000x48000 -0.75,0.20 -0.85,0.10 <- this
 mandelbrot_colors.exe mandel.png 64000x48000 -1.20,0.35 -1.0,0.20
 
 mandelbrot_colors.exe mandel.png 128000x96000 -0.75,0.20 -0.85,0.10
 
-
 mandelbrot_colors.exe mandel.png 64000x48000 -1.10,0.40 -0.85,0.20 
+
+
+
+mandelbrot_colors.exe mandel.png 64000x48000 -0.71,0.15 -0.81,0.076 
+
+mandelbrot_colors.exe mandel.png 64000x48000 -0.760599644444444442840,0.114374399999999999925 -0.776478755555555553640,0.102465066666666666615 
+mandelbrot_colors.exe mandel.png 640x480 -0.776478755555555553640,0.102465066666666666615 -0.760599644444444442840,0.114374399999999999925  

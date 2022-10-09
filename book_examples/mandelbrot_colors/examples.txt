@@ -1,0 +1,5 @@
+static MAX: u16 = 7000; 
+static MAX_U16: u16 = 65535;
+static RED_JUMP: u16 = 100; 
+static GREEN_JUMP: u16 = 200;
+static BLUE_JUMP: u16 = 600;

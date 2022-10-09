@@ -3,13 +3,12 @@ use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
 
-// TODO more testing (curent values untested)
-static MAX: u16 = 3500; //65535;
+
+static MAX: u16 = 7000; //65535;
 static MAX_U16: u16 = 65535;
 static RED_JUMP: u16 = 100; 
-static GREEN_JUMP: u16 = 50;
-static BLUE_JUMP: u16 = 70;
-
+static GREEN_JUMP: u16 = 200;
+static BLUE_JUMP: u16 = 600;
 fn rgb_granient(i: u16) -> (u16, u16, u16) {
     //let (r, g, b);
     // if i + RED_JUMP == MAX {
@@ -27,7 +26,7 @@ fn rgb_granient(i: u16) -> (u16, u16, u16) {
     // } else {
     //     b = i + BLUE_JUMP;
     // }
-    return (i * RED_JUMP, i * GREEN_JUMP, i * BLUE_JUMP);
+    return (i* RED_JUMP, i * GREEN_JUMP, i * BLUE_JUMP);
 }
 
 fn escape_time(c: Complex<f64>, limit: u16) -> Option<(u16, u16, u16)> {
