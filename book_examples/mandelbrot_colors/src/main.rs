@@ -4,7 +4,7 @@ use std::fmt::Display;
 use std::str::FromStr;
 
 
-static MAX: u16 = 7000; //65535;
+static MAX: u16 = 14000; //65535;
 static MAX_U16: u16 = 65535;
 static RED_JUMP: u16 = 100; 
 static GREEN_JUMP: u16 = 200;
