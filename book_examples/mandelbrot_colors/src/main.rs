@@ -3,30 +3,13 @@ use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
 
-
 static MAX: u16 = 14000; //65535;
 static MAX_U16: u16 = 65535;
-static RED_JUMP: u16 = 100; 
+static RED_JUMP: u16 = 100;
 static GREEN_JUMP: u16 = 200;
 static BLUE_JUMP: u16 = 600;
 fn rgb_granient(i: u16) -> (u16, u16, u16) {
-    //let (r, g, b);
-    // if i + RED_JUMP == MAX {
-    //     r = MAX;
-    // } else {
-    //     r = i + RED_JUMP;
-    // }
-    // if i + GREEN_JUMP == MAX {
-    //     g = MAX;
-    // } else {
-    //     g = i + GREEN_JUMP;
-    // }
-    // if i + BLUE_JUMP == MAX {
-    //     b = MAX;
-    // } else {
-    //     b = i + BLUE_JUMP;
-    // }
-    return (i* RED_JUMP, i * GREEN_JUMP, i * BLUE_JUMP);
+    return (i * RED_JUMP, i * GREEN_JUMP, i * BLUE_JUMP);
 }
 
 fn escape_time(c: Complex<f64>, limit: u16) -> Option<(u16, u16, u16)> {
@@ -123,11 +106,7 @@ fn render(
             let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
             pixels[row * bounds.0 + column] = match escape_time(point, MAX) {
                 None => (0, 0, 0),
-                Some(count) => (
-                    MAX_U16 - count.0,
-                    MAX_U16 - count.1,
-                    MAX_U16 - count.2,
-                ),
+                Some(count) => (MAX_U16 - count.0, MAX_U16 - count.1, MAX_U16 - count.2),
             }
         }
     }
@@ -177,27 +156,6 @@ fn write_image(
     imgbuf.save(file_name).unwrap();
 
     Ok(())
-}
-
-// single thread main
-fn single_thread() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() != 5 {
-        eprintln!("Usage: {} file pixels upper_left, lower_right", args[0]);
-        eprintln!(
-            "Example: {} mandel.png 1000x750 -1.20,0.35 -1.0,2.0",
-            args[0]
-        );
-        std::process::exit(1);
-    }
-    let bounds = parse_pair(&args[2], 'x').expect("Error parsing image dimensions");
-    let upper_left = parse_complex(&args[3]).expect("Error parsing upper left point");
-    let lower_right = parse_complex(&args[4]).expect("Error parsing lover right point");
-
-    let mut pixels = vec![(0, 0, 0); bounds.0 * bounds.1];
-    render(&mut pixels, bounds, upper_left, lower_right);
-
-    write_image(&args[1], &pixels, bounds).expect("error writing PNG file");
 }
 
 // multithread main
