@@ -169,6 +169,7 @@ fn multi_thread() {
         );
         std::process::exit(1);
     }
+
     let bounds = parse_pair(&args[2], 'x').expect("Error parsing image dimensions");
     let upper_left = parse_complex(&args[3]).expect("Error parsing upper left point");
     let lower_right = parse_complex(&args[4]).expect("Error parsing lover right point");
@@ -176,17 +177,21 @@ fn multi_thread() {
     let mut pixels = vec![(0, 0, 0); bounds.0 * bounds.1];
     let threads = 16;
     let rows_per_band = bounds.1 / threads + 1;
+
     {
         let bands: Vec<&mut [(u16, u16, u16)]> =
             pixels.chunks_mut(rows_per_band * bounds.0).collect();
+
         crossbeam::scope(|spawner| {
             for (i, band) in bands.into_iter().enumerate() {
                 let top = rows_per_band * i;
                 let height = band.len() / bounds.0;
                 let band_bounds = (bounds.0, height);
                 let band_upper_left = pixel_to_point(bounds, (0, top), upper_left, lower_right);
+
                 let band_lower_right =
                     pixel_to_point(bounds, (bounds.0, top + height), upper_left, lower_right);
+
                 spawner.spawn(move |_| {
                     render(band, band_bounds, band_upper_left, band_lower_right);
                 });
