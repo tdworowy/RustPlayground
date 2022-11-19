@@ -1,5 +1,5 @@
 [package]
-name = "exercises1_two_sum"
+name = "exercise2_de_duplication"
 version = "0.1.0"
 edition = "2021"
 
