@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "exercise1_two_sum"
+name = "exercise6_max_bags"
 version = "0.1.0"
