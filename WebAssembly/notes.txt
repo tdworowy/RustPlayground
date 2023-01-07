@@ -1,5 +1,3 @@
 wasm-pack build --target web <- compilte
 
-
-
 emrun index.html (if not working go to D:\emscripten\emsdk and emsdk activate latest)
