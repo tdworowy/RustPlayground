@@ -5,3 +5,12 @@ cargo test
 cargo fmt
 cargo new
 
+cargo clippy
+
+
+rustup update
+
+
+
+-----------
+https://developers.facebook.com/blog/post/2020/09/30/build-discord-bot-with-rust-and-serenity/
