@@ -1,3 +1,6 @@
+https://developers.facebook.com/blog/post/2020/09/30/build-discord-bot-with-rust-and-serenity/
+
+
 https://discord.com/developers/applications/1079080092812189797/bot
 
 https://discord.com/api/oauth2/authorize?client_id=1079080092812189797&permissions=67584&scope=bot
