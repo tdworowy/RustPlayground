@@ -3,6 +3,8 @@ use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
 
+use rayon::prelude::*;
+
 static MAX: u16 = 14000; //65535;
 static MAX_U16: u16 = 65535;
 static RED_JUMP: u16 = 100;
@@ -160,7 +162,7 @@ fn write_image(
 }
 
 // multithread main
-fn multi_thread() {
+fn multi_thread_old() {
     let args: Vec<String> = env::args().collect();
     if args.len() != 5 {
         eprintln!("Usage: {} file pixels upper_left, lower_right", args[0]);
@@ -199,6 +201,39 @@ fn multi_thread() {
             }
         })
         .unwrap();
+    }
+
+    write_image(&args[1], &pixels, bounds).expect("error writing PNG file");
+}
+
+fn multi_thread() {
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 5 {
+        eprintln!("Usage: {} file pixels upper_left, lower_right", args[0]);
+        eprintln!(
+            "Example: {} mandel.png 1000x750 -1.20,0.35 -1.0,2.0",
+            args[0]
+        );
+        std::process::exit(1);
+    }
+
+    let bounds = parse_pair(&args[2], 'x').expect("Error parsing image dimensions");
+    let upper_left = parse_complex(&args[3]).expect("Error parsing upper left point");
+    let lower_right = parse_complex(&args[4]).expect("Error parsing lover right point");
+
+    let mut pixels = vec![(0, 0, 0); bounds.0 * bounds.1];
+
+    {
+        let bands: Vec<(usize, &mut [(u16, u16, u16)])> =
+            pixels.chunks_mut(bounds.0).enumerate().collect();
+        bands.into_par_iter().for_each(|(i, band)| {
+            let top = i;
+            let band_bounds = (bounds.0, 1);
+            let band_upper_left = pixel_to_point(bounds, (0, top), upper_left, lower_right);
+            let band_lower_right =
+                pixel_to_point(bounds, (bounds.0, top + 1), upper_left, lower_right);
+            render(band, band_bounds, band_upper_left, band_lower_right);
+        })
     }
 
     write_image(&args[1], &pixels, bounds).expect("error writing PNG file");
