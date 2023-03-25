@@ -19,6 +19,28 @@ use crate::merge::FileMerge;
 use crate::temp::TmpDir;
 use crate::write::write_index_to_tmp_file;
 
+// is not used
+pub trait OffThreadExt: Iterator {
+    fn off_thread(self) -> mpsc::IntoIter<Self::Item>;
+}
+impl<T> OffThreadExt for T
+where
+    T: Iterator + Send + 'static,
+    T::Item: Send + 'static,
+{
+    fn off_thread(self) -> mpsc::IntoIter<Self::Item> {
+        let (sender, reciver) = mpsc::sync_channel(1024);
+        thread::spawn(move || {
+            for item in self {
+                if sender.send(item).is_err() {
+                    break;
+                }
+            }
+        });
+        reciver.into_iter()
+    }
+}
+
 fn start_file_reader_thread(
     documents: Vec<PathBuf>,
 ) -> (mpsc::Receiver<String>, thread::JoinHandle<io::Result<()>>) {
