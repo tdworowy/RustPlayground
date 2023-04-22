@@ -17,10 +17,10 @@ fn main() -> ChatResult<()> {
         let mut new_connection = listener.incoming();
         while let Some(socket_result) = new_connection.next().await {
             let socket = socket_result?;
-            let group = chat_group_table.clone();
+            let groups = chat_group_table.clone();
             task::spawn(async {
                 log_error(serve(socket, groups).await);
-            })
+            });
         }
         Ok(())
     })
