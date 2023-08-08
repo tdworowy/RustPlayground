@@ -1,5 +1,3 @@
-use std::ops::Index;
-
 fn find_pivot(nums: &Vec<i32>, low: i32, high: i32) -> i32 {
     if high < low {
         return -1;
