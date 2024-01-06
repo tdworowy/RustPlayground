@@ -4,8 +4,9 @@ fn min_cost(colors: String, needed_time: Vec<i32>) -> i32 {
 
         let mut res_time: i32 = 0;
         let mut max_time: i32 = 0;
-
+    
         for (i, color) in colors.chars().enumerate() {
+
             if color != last {
                 res_time -= max_time;
                 max_time = 0;
