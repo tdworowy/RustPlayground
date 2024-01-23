@@ -32,13 +32,13 @@ impl<T: Iterator + Clone> ProductRepeat for T where T::Item: Clone {}
 fn print_all_staris_combinations(n: usize) {
     let mut results: Vec<Vec<usize>> = Vec::new();
     for i in 2..n {
-        results.extend(product_repeat(1..3, i).collect::<Vec<Vec<usize>>>());
+        for r in product_repeat(1..3, i) {
+            let s: usize = r.iter().sum();
+            if s == n {
+                results.push(r)
+            }
+        }
     }
-    results.retain(|x| {
-        let s: usize = x.iter().sum();
-        s == n
-    });
-
     let ones: Vec<usize> = vec![1; n];
     results.push(ones);
     results.into_iter().for_each(|x| {
@@ -56,5 +56,5 @@ fn main() {
     // print_all_staris_combinations(5);
     // print_all_staris_combinations(8);
 
-    print_all_staris_combinations(50);
+    print_all_staris_combinations(40);
 }
