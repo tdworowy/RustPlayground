@@ -51,10 +51,13 @@ fn main() {
     // println!("{:?}", climb_stairs(3)); //3
     // println!("{:?}", climb_stairs(4)); //5
     // println!("{:?}", climb_stairs(5)); //8
+    //  println!("{:?}", climb_stairs(30));
+    //  println!("{:?}", climb_stairs(40));
+    //  println!("{:?}", climb_stairs(43));
     // println!("{:?}", climb_stairs(183)); //127127879743834334146972278486287885163
 
     // print_all_staris_combinations(5);
     // print_all_staris_combinations(8);
 
-    print_all_staris_combinations(40);
+    print_all_staris_combinations(30);
 }
