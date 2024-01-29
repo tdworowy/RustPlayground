@@ -1,64 +1,84 @@
 use std::collections::HashMap;
 use std::iter::zip;
+
+fn generate_combinations_helper(prefix: &Vec<String>, remaining: &[String]) -> Vec<Vec<String>> {
+    if remaining.is_empty() {
+        return vec![prefix.clone()];
+    }
+
+    let mut result = Vec::new();
+
+    for (i, element) in remaining.iter().enumerate() {
+        let mut new_prefix = prefix.clone();
+        new_prefix.push(element.clone());
+
+        let new_remaining: Vec<String> = remaining[..i]
+            .iter()
+            .chain(remaining[i + 1..].iter())
+            .cloned()
+            .collect();
+
+        let combinations = generate_combinations_helper(&new_prefix, &new_remaining);
+        result.extend(combinations);
+    }
+
+    result
+}
+
+fn generate_combinations(elements: &[String]) -> Vec<Vec<String>> {
+    generate_combinations_helper(&Vec::new(), elements)
+}
+
 fn max_score_words(words: Vec<String>, letters: Vec<char>, score: Vec<i32>) -> i32 {
     let mut alphabet_map: HashMap<char, i32> = HashMap::new();
-    let mut letters = letters;
-
     let mut words_scored_map: HashMap<String, i32> = HashMap::new();
-    let mut words_scored: Vec<String> = Vec::new();
-
     let alph: Vec<char> = "abcdefghijklmnopqrstuvwxyz".to_string().chars().collect();
 
     zip(alph, score).for_each(|(l, s)| {
         alphabet_map.insert(l, s);
     });
 
-    for word in words.clone() {
+    let mut words_temp = words.clone();
+    words_temp.sort();
+    words_temp.dedup();
+    for word in words_temp {
         for l in word.chars() {
             let wm = words_scored_map.entry(word.clone()).or_insert(0);
             *wm += alphabet_map[&l];
         }
     }
+    let mut score_sums: Vec<i32> = Vec::new();
+    let wods_combintion: Vec<Vec<String>> = generate_combinations(&words);
 
-    let words_scored_map_read = words_scored_map.clone();
+    
+    //TODO make it multi thread
+    for _words in wods_combintion {
+        let mut results: Vec<String> = Vec::new();
+        let mut _letters = letters.clone();
+        let mut f: bool = true;
+        let mut score_sum: i32 = 0;
 
-    let mut i: usize = 0;
-    while i <= words.len() {
-        let mut max = 0;
-        let mut _word: String = "".to_string();
-        for (w, s) in words_scored_map.clone() {
-            if s > max {
-                max = s;
-                _word = w.clone();
+        for word in _words {
+            for l in word.chars() {
+                if _letters.contains(&l) {
+                    let index = _letters.iter().position(|x| *x == l).unwrap();
+                    _letters.remove(index);
+                } else {
+                    f = false;
+                    break;
+                }
+            }
+            if f {
+                results.push(word);
             }
         }
-        i += 1;
-        words_scored.push(_word.clone());
-        words_scored_map.remove(&_word);
+
+        results.into_iter().for_each(|w| {
+            score_sum += words_scored_map[&w];
+        });
+        score_sums.push(score_sum);
     }
-    // println!("{:?}", words_scored_map_read);
-    let mut results: Vec<String> = Vec::new();
-    let mut f: bool = true;
-    for word in words_scored {
-        for l in word.chars() {
-            if letters.contains(&l) {
-                let index = letters.iter().position(|x| *x == l).unwrap();
-                letters.remove(index);
-            } else {
-                f = false;
-                break;
-            }
-        }
-        if f {
-            results.push(word);
-        }
-    }
-    //println!("{:?}", results);
-    let mut score_sum: i32 = 0;
-    results.into_iter().for_each(|w| {
-        score_sum += words_scored_map_read[&w];
-    });
-    score_sum
+    score_sums.into_iter().max().unwrap()
 }
 
 fn main() {
@@ -87,7 +107,7 @@ fn main() {
             vec!['z', 'a', 'b', 'c', 'x', 'x', 'x'],
             vec![4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 10]
         )
-    ); //27 <- incorrect, returns 25
+    ); //27
     println!(
         "{:?}",
         max_score_words(
@@ -96,4 +116,37 @@ fn main() {
             vec![0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
         )
     ); //0
+    println!(
+        "{:?}",
+        max_score_words(
+            vec![
+                "add".to_string(),
+                "dda".to_string(),
+                "bb".to_string(),
+                "ba".to_string(),
+                "add".to_string()
+            ],
+            vec!['a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c', 'c', 'd', 'd', 'd'],
+            vec![3, 9, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        )
+    ); //51
+
+    println!(
+        "{:?}",
+        max_score_words(
+            vec![
+                "cadedaecb".to_string(),
+                "dccadce".to_string(),
+                "eee".to_string(),
+                "dda".to_string(),
+                "dceeadd".to_string(),
+                "abe".to_string(),
+                "adea".to_string(),
+                "aec".to_string(),
+                "aecdbecbbe".to_string(),
+            ],
+            vec!['a','a','a','a','a','b','b','b','b','b','b','c','c','c','c','c','c','c','c','d','d','d','d','d','d','d','e','e','e','e','e','e'],
+            vec![7,1,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        )
+    ); //86 but to slow
 }
