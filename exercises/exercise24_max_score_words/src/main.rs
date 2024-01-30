@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use std::iter::zip;
+use std::sync::mpsc::channel;
+use std::thread;
 
 fn generate_combinations_helper(prefix: &Vec<String>, remaining: &[String]) -> Vec<Vec<String>> {
     if remaining.is_empty() {
@@ -47,36 +49,45 @@ fn max_score_words(words: Vec<String>, letters: Vec<char>, score: Vec<i32>) -> i
             *wm += alphabet_map[&l];
         }
     }
-    let mut score_sums: Vec<i32> = Vec::new();
-    let wods_combintion: Vec<Vec<String>> = generate_combinations(&words);
-
     
-    //TODO make it multi thread
-    for _words in wods_combintion {
-        let mut results: Vec<String> = Vec::new();
-        let mut _letters = letters.clone();
-        let mut f: bool = true;
-        let mut score_sum: i32 = 0;
+    let mut score_sums: Vec<i32> = Vec::new();
+    let (tx, rx) = channel();
+    let words_combination: Vec<Vec<String>> = generate_combinations(&words);
+    let words_combination_len = words_combination.len();
+        
+    for _words in words_combination {
+        let tx = tx.clone();
+        let words_scored_map = words_scored_map.clone();
+        let letters = letters.clone();
+        thread::spawn(move || {
+            let mut results: Vec<String> = Vec::new();
+            let mut _letters = letters.clone();
+            let mut f: bool = true;
+            let mut score_sum: i32 = 0;
 
-        for word in _words {
-            for l in word.chars() {
-                if _letters.contains(&l) {
-                    let index = _letters.iter().position(|x| *x == l).unwrap();
-                    _letters.remove(index);
-                } else {
-                    f = false;
-                    break;
+            for word in _words {
+                for l in word.chars() {
+                    if _letters.contains(&l) {
+                        let index = _letters.iter().position(|x| *x == l).unwrap();
+                        _letters.remove(index);
+                    } else {
+                        f = false;
+                        break;
+                    }
+                }
+                if f {
+                    results.push(word);
                 }
             }
-            if f {
-                results.push(word);
-            }
-        }
 
-        results.into_iter().for_each(|w| {
-            score_sum += words_scored_map[&w];
+            results.into_iter().for_each(|w| {
+                score_sum += words_scored_map[&w];
+            });
+            tx.send(score_sum).unwrap();
         });
-        score_sums.push(score_sum);
+    }
+    for _ in 0..words_combination_len {
+        score_sums.push(rx.recv().unwrap());
     }
     score_sums.into_iter().max().unwrap()
 }
@@ -107,7 +118,7 @@ fn main() {
             vec!['z', 'a', 'b', 'c', 'x', 'x', 'x'],
             vec![4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 10]
         )
-    ); //27
+    ); // 27
     println!(
         "{:?}",
         max_score_words(
@@ -115,7 +126,7 @@ fn main() {
             vec!['l', 'e', 't', 'c', 'o', 'd'],
             vec![0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
         )
-    ); //0
+    ); // 0
     println!(
         "{:?}",
         max_score_words(
@@ -129,7 +140,7 @@ fn main() {
             vec!['a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c', 'c', 'd', 'd', 'd'],
             vec![3, 9, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         )
-    ); //51
+    ); // 51
 
     println!(
         "{:?}",
@@ -145,8 +156,31 @@ fn main() {
                 "aec".to_string(),
                 "aecdbecbbe".to_string(),
             ],
-            vec!['a','a','a','a','a','b','b','b','b','b','b','c','c','c','c','c','c','c','c','d','d','d','d','d','d','d','e','e','e','e','e','e'],
-            vec![7,1,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            vec![
+                'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c', 'c',
+                'c', 'c', 'c', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'e', 'e', 'e', 'e', 'e', 'e'
+            ],
+            vec![7, 1, 3, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         )
-    ); //86 but to slow
+    ); // 86
+    println!(
+        "{:?}",
+        max_score_words(
+            vec![
+                "aeaa".to_string(),
+                "d".to_string(),
+                "bedc".to_string(),
+                "c".to_string(),
+                "ccbac".to_string(),
+                "eedda".to_string(),
+                "aabd".to_string(),
+                "abab".to_string(),
+            ],
+            vec![
+                'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'c', 'c', 'c',
+                'c', 'd', 'd', 'd', 'd', 'd', 'e', 'e'
+            ],
+            vec![10, 8, 8, 1, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        )
+    ); // 155
 }
