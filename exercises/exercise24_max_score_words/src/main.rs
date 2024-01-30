@@ -49,27 +49,26 @@ fn max_score_words(words: Vec<String>, letters: Vec<char>, score: Vec<i32>) -> i
             *wm += alphabet_map[&l];
         }
     }
-    
+
     let mut score_sums: Vec<i32> = Vec::new();
     let (tx, rx) = channel();
     let words_combination: Vec<Vec<String>> = generate_combinations(&words);
     let words_combination_len = words_combination.len();
-        
+
     for _words in words_combination {
         let tx = tx.clone();
         let words_scored_map = words_scored_map.clone();
-        let letters = letters.clone();
+        let mut letters = letters.clone();
         thread::spawn(move || {
             let mut results: Vec<String> = Vec::new();
-            let mut _letters = letters.clone();
             let mut f: bool = true;
             let mut score_sum: i32 = 0;
 
             for word in _words {
                 for l in word.chars() {
-                    if _letters.contains(&l) {
-                        let index = _letters.iter().position(|x| *x == l).unwrap();
-                        _letters.remove(index);
+                    if letters.contains(&l) {
+                        let index = letters.iter().position(|x| *x == l).unwrap();
+                        letters.remove(index);
                     } else {
                         f = false;
                         break;
