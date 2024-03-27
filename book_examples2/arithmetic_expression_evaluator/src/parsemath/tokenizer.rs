@@ -35,7 +35,7 @@ impl<'a> Iterator for Tokenizer<'a> {
                 Some(Token::Num(number.parse::<f64>().unwrap()))
             }
             Some('+') => Some(Token::Add),
-            Some('-') => Some(Token::Substract),
+            Some('-') => Some(Token::Subtract),
             Some('*') => Some(Token::Multiply),
             Some('/') => Some(Token::Divide),
             Some('^') => Some(Token::Caret),
@@ -44,5 +44,27 @@ impl<'a> Iterator for Tokenizer<'a> {
             None => Some(Token::EOF),
             Some(_) => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_positive_integer() {
+        let mut tokenizer = Tokenizer::new("34");
+        assert_eq!(tokenizer.next().unwrap(), Token::Num(34.0))
+    }
+    #[test]
+    fn test_decimal_number() {
+        let mut tokenizer = Tokenizer::new("34.5");
+        assert_eq!(tokenizer.next().unwrap(), Token::Num(34.5))
+    }
+    #[test]
+    #[ignore]
+    fn test_invalid_char() {
+        let mut tokenizer = Tokenizer::new("#$%");
+        assert_eq!(tokenizer.next().unwrap(), Token::Num(34.5));
     }
 }
