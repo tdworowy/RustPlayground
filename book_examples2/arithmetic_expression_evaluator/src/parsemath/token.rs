@@ -17,7 +17,7 @@ pub enum OperPrec {
     AddSub,
     MulDiv,
     Power,
-    Negative
+    Negative,
 }
 
 impl Token {

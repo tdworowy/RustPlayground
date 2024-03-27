@@ -4,9 +4,8 @@ mod parsemath;
 use parsemath::ast;
 use parsemath::parser::{ParseError, Parser};
 
-
 fn evaluate(expr: String) -> Result<f64, ParseError> {
-    let expr = expr.split_whitespace().collect::<String>(); 
+    let expr = expr.split_whitespace().collect::<String>();
     let mut math_parser = Parser::new(&expr)?;
     let ast = math_parser.parse()?;
     println!("The generated AST is {:?}", ast);

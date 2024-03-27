@@ -90,7 +90,7 @@ impl<'a> Parser<'a> {
             )))
         }
     }
-    
+
     fn convert_token_to_node(&mut self, left_expr: Node) -> Result<Node, ParseError> {
         match self.current_token {
             Token::Add => {
