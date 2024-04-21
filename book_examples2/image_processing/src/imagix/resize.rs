@@ -111,8 +111,7 @@ fn resize_image(size: u32, src_folder: &mut PathBuf) -> Result<(), ImagixError> 
     if !dest_folder.exists() {
         fs::create_dir(&dest_folder)?;
     }
-    dest_folder.pop();
-    dest_folder.push("tmp/tmp.png");
+    dest_folder.push("temp.png");
     dest_folder.set_file_name(new_file_name?.as_str());
 
     // Open source image file, scale it to desired size and write output to destination-folder/destination-file
