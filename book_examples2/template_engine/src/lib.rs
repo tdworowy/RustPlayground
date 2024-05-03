@@ -8,11 +8,11 @@ pub enum ContentType {
     Unrecognized,
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct ExpressionData {
-    pub head: Option<String>,
-    pub variable: String,
-    pub tail: Option<String>,
+    pub expression: String,
+    pub var_map: Vec<String>,
+    pub gen_html: String,
 }
 
 #[derive(PartialEq, Debug)]
@@ -70,37 +70,32 @@ pub fn get_content_type(input_line: &str) -> ContentType {
 }
 
 pub fn generate_html_template_var(
-    content: ExpressionData,
+    content: &mut ExpressionData,
     context: HashMap<String, String>,
-) -> String {
-    let mut html = String::new();
-    println!("expression data is:{:?}", content);
-    if let Some(h) = content.head {
-        html.push_str(&h);
+) -> &mut ExpressionData {
+    content.gen_html = content.expression.clone();
+    for var in &content.var_map {
+        let (_h, i) = get_index_for_symbol(&var, '{');
+        let (_, k) = get_index_for_symbol(&var, '}');
+        let var_without_braces = &var[i + 2..k];
+        let val = context.get(var_without_braces).unwrap();
+        content.gen_html = content.gen_html.replace(var, val);
     }
-
-    if let Some(val) = context.get(&content.variable) {
-        html.push_str(&val);
-    }
-
-    if let Some(t) = content.tail {
-        html.push_str(&t);
-    }
-
-    html
+    content
 }
 
 pub fn get_expression_data(input_line: &str) -> ExpressionData {
-    let (_h, i) = get_index_for_symbol(input_line, '{');
-    let head = input_line[0..i].to_string();
-    let (_j, k) = get_index_for_symbol(input_line, '}');
-    let variable = input_line[i + 1 + 1..k].to_string();
-    let tail = input_line[k + 1 + 1..].to_string();
-
+    let expression_iter = input_line.split_whitespace();
+    let mut template_var_map: Vec<String> = vec![];
+    for word in expression_iter {
+        if check_symbol_string(word, "{{") && check_symbol_string(word, "}}") {
+            template_var_map.push(word.to_string());
+        }
+    }
     ExpressionData {
-        head: Some(head),
-        variable,
-        tail: Some(tail),
+        expression: input_line.into(),
+        var_map: template_var_map,
+        gen_html: "".into(),
     }
 }
 
@@ -115,13 +110,14 @@ mod tests {
 
     #[test]
     fn check_template_var_test() {
-        let content = ExpressionData {
-            head: Some("Hi ".to_string()),
-            variable: "name".to_string(),
-            tail: Some(" bye".to_string()),
+        let content = "Hi {{name}} bye".into();
+        let expr_data = ExpressionData {
+            expression: content,
+            var_map: vec!["{{name}}".to_string()],
+            gen_html: "".into(),
         };
         assert_eq!(
-            ContentType::TemplateVariable(content),
+            ContentType::TemplateVariable(expr_data),
             get_content_type("Hi {{name}} bye")
         );
     }
@@ -147,13 +143,17 @@ mod tests {
 
     #[test]
     fn check_get_expression_data_test() {
+        let map_var = vec!["{{name}}".to_string(), "{{city}}".to_string()];
         let expression_data = ExpressionData {
-            head: Some("Hi ".to_string()),
-            variable: "name".to_string(),
-            tail: Some(",welcome".to_string()),
+            expression: "Hi {{name}} , welcome to {{city}}".into(),
+            var_map: map_var,
+            gen_html: "".into(),
         };
 
-        assert_eq!(expression_data, get_expression_data("Hi {{name}},welcome"));
+        assert_eq!(
+            expression_data,
+            get_expression_data("Hi {{name}} , welcome to {{city}}")
+        );
     }
     #[test]
     fn check_symbol_string_test() {
