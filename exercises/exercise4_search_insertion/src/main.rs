@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
     let mut start: i32 = 0;
-    let mut end: i32 = (nums.len() -1) as i32;
+    let mut end: i32 = (nums.len() - 1) as i32;
 
     while start <= end {
         let mid = start + (end - start) / 2;

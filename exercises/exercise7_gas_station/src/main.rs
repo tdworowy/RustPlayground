@@ -23,15 +23,19 @@ fn can_complete_circuit2(gas: Vec<i32>, cost: Vec<i32>) -> i32 {
     let mut total: i32 = 0;
     let mut current_gas: i32 = 0;
     let mut start_idx: i32 = 0;
-    gas.iter().zip(cost).into_iter().enumerate().for_each(|(i, (g, c))| {
-        let diff = g - c;
-        total += diff;
-        current_gas += diff;
-        if current_gas < 0 {
-            start_idx = i as i32 + 1;
-            current_gas = 0;
-        }
-    });
+    gas.iter()
+        .zip(cost)
+        .into_iter()
+        .enumerate()
+        .for_each(|(i, (g, c))| {
+            let diff = g - c;
+            total += diff;
+            current_gas += diff;
+            if current_gas < 0 {
+                start_idx = i as i32 + 1;
+                current_gas = 0;
+            }
+        });
 
     if total < 0 {
         -1

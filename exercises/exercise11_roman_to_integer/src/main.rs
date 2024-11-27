@@ -14,8 +14,8 @@ fn roman_to_int(s: String) -> i32 {
     let roman_chars: Vec<char> = s.chars().collect();
     let mut i = 0;
     while i < roman_chars.len() {
-       let ch1 = roman_chars[i];
-        if i < roman_chars.len() -1 {
+        let ch1 = roman_chars[i];
+        if i < roman_chars.len() - 1 {
             let ch2 = roman_chars[i + 1];
             if map[&ch1] < map[&ch2] {
                 sum += map[&ch2] - map[&ch1];
@@ -29,7 +29,6 @@ fn roman_to_int(s: String) -> i32 {
     }
     sum
 }
-
 
 fn main() {
     println!("{:?}", roman_to_int("III".to_string()));
