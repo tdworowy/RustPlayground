@@ -249,11 +249,11 @@ fn main() {
             parse_pair(&args[3], 'x').expect("Error parsing image dimensions");
         for i in 1..count.parse::<i32>().unwrap() {
             let file_name = format!("madnel{}.png", i);
-            let x1: f64 = rand::thread_rng().gen_range(-2.5..2.5);
-            let y1: f64 = rand::thread_rng().gen_range(-2.5..2.5);
-            let x2: f64 = rand::thread_rng().gen_range(-2.5..2.5);
-            let y2: f64 = rand::thread_rng().gen_range(-2.5..2.5);
-
+            let x1: f64 = rand::thread_rng().gen_range(-1.5..1.5);
+            let y1: f64 = rand::thread_rng().gen_range(-1.5..1.5);
+            let x2: f64 = rand::thread_rng().gen_range(-1.5..1.5);
+            let y2: f64 = rand::thread_rng().gen_range(-1.5..1.5);
+            
             println!(
                 "x1: {:.20} y1: {:.20} x2: {:.20} xy: {:.20}",
                 x1, y1, x2, y2
@@ -273,3 +273,4 @@ fn main() {
         multi_thread(file_name, bounds, upper_left, lower_right)
     }
 }
+
