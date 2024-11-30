@@ -1,4 +1,5 @@
 use num::Complex;
+use rand::Rng;
 use std::env;
 use std::fmt::Display;
 use std::str::FromStr;
@@ -206,21 +207,12 @@ fn multi_thread_old() {
     write_image(&args[1], &pixels, bounds).expect("error writing PNG file");
 }
 
-fn multi_thread() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() != 5 {
-        eprintln!("Usage: {} file pixels upper_left, lower_right", args[0]);
-        eprintln!(
-            "Example: {} mandel.png 1000x750 -1.20,0.35 -1.0,2.0",
-            args[0]
-        );
-        std::process::exit(1);
-    }
-
-    let bounds = parse_pair(&args[2], 'x').expect("Error parsing image dimensions");
-    let upper_left = parse_complex(&args[3]).expect("Error parsing upper left point");
-    let lower_right = parse_complex(&args[4]).expect("Error parsing lover right point");
-
+fn multi_thread(
+    file_name: &str,
+    bounds: (usize, usize),
+    upper_left: Complex<f64>,
+    lower_right: Complex<f64>,
+) {
     let mut pixels = vec![(0, 0, 0); bounds.0 * bounds.1];
 
     {
@@ -236,9 +228,48 @@ fn multi_thread() {
         })
     }
 
-    write_image(&args[1], &pixels, bounds).expect("error writing PNG file");
+    write_image(file_name, &pixels, bounds).expect("error writing PNG file");
 }
 
 fn main() {
-    multi_thread()
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 5 && args.len() != 4 {
+        eprintln!("Usage: {} file pixels upper_left, lower_right", args[0]);
+        eprintln!("Or Usage: {} random count_to_generte pixels", args[0]);
+        eprintln!(
+            "Example1: {} mandel.png 1000x750 -1.20,0.35 -1.0,2.0",
+            args[0]
+        );
+        eprintln!("Example2: {} random 10 1920x1080", args[0]);
+        std::process::exit(1);
+    }
+    if &args[1] == "random" {
+        let count = &args[2];
+        let bounds: (usize, usize) =
+            parse_pair(&args[3], 'x').expect("Error parsing image dimensions");
+        for i in 1..count.parse::<i32>().unwrap() {
+            let file_name = format!("madnel{}.png", i);
+            let x1: f64 = rand::thread_rng().gen_range(-2.5..2.5);
+            let y1: f64 = rand::thread_rng().gen_range(-2.5..2.5);
+            let x2: f64 = rand::thread_rng().gen_range(-2.5..2.5);
+            let y2: f64 = rand::thread_rng().gen_range(-2.5..2.5);
+
+            println!(
+                "x1: {:.20} y1: {:.20} x2: {:.20} xy: {:.20}",
+                x1, y1, x2, y2
+            );
+
+            let upper_left = parse_complex(&format!("{:.20},{:.20}", x1, y1))
+                .expect("Error parsing upper left point");
+            let lower_right = parse_complex(&format!("{:.20},{:.20}", x2, y2))
+                .expect("Error parsing lover right point");
+            multi_thread(&file_name, bounds, upper_left, lower_right)
+        }
+    } else {
+        let file_name = &args[1];
+        let bounds = parse_pair(&args[2], 'x').expect("Error parsing image dimensions");
+        let upper_left = parse_complex(&args[3]).expect("Error parsing upper left point");
+        let lower_right = parse_complex(&args[4]).expect("Error parsing lover right point");
+        multi_thread(file_name, bounds, upper_left, lower_right)
+    }
 }

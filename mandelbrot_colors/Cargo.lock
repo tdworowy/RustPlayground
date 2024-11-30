@@ -492,6 +492,7 @@ dependencies = [
  "crossbeam",
  "image",
  "num",
+ "rand",
  "rayon",
 ]
 
