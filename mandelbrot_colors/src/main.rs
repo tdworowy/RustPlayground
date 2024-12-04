@@ -249,10 +249,10 @@ fn main() {
             parse_pair(&args[3], 'x').expect("Error parsing image dimensions");
         for i in 1..count.parse::<i32>().unwrap() {
             let file_name = format!("madnel{}.png", i);
-            let x1a: f64 = rand::thread_rng().gen_range(-1.5..1.5);
-            let y1a: f64 = rand::thread_rng().gen_range(-1.5..1.5);
-            let x2a: f64 = rand::thread_rng().gen_range(x1a..1.5);
-            let y2a: f64 = rand::thread_rng().gen_range(y1a..1.5);
+            let x1a: f64 = rand::thread_rng().gen_range(-0.80..-0.78);
+            let y1a: f64 = rand::thread_rng().gen_range(0.131..0.133);
+            let x2a: f64 = rand::thread_rng().gen_range(-0.78..-0.77);
+            let y2a: f64 = rand::thread_rng().gen_range(0.133..0.135);
 
             let x1b: f64 = rand::thread_rng().gen_range(0.0..1.0);
             let y1b: f64 = rand::thread_rng().gen_range(0.0..1.0);
@@ -276,7 +276,7 @@ fn main() {
                 y2b.fract().to_string().trim_start_matches("0.")
             ))
             .expect("Error parsing lover right point");
-        
+
             multi_thread(&file_name, bounds, upper_left, lower_right)
         }
     } else {
